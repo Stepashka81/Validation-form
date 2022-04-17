@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        form input {
+            margin: 0.5em;
+        }
+
+        input.error {
+            border-color: red;
+        }
+
+        input.error:after {
+            content: "*check it";
+            color: red;
+        }
+
+        input.valid {
+            border-color: green;
+        }
+    </style>
+</head>
+
+<body>
+    <form id="mainform" name="mainform" action="" method="post">
+        <input type="text" id="f1" name="f1" placeholder="date ff 11.11.2011" data-validation="date"><br>
+        <input type="text" id="f2" name="f2" placeholder="name" data-validation="name"><br>
+        <input type="text" id="f3" name="f3" placeholder="login 5-15 symbol" data-validation="login"><br>
+        <input type="text" id="f4" name="f4" placeholder="input e-mail" data-validation="email"><br>
+        <input type="text" id="f5" name="f5" placeholder="passport" data-validation="passport"><br>
+        <input type="text" id="f6" name="f6" placeholder="phone number" data-validation="phone"><br>
+        <input type="password" id="f7" name="f7" placeholder="password 8-15 symb" data-validation="password"><br>
+        <input type="submit" id="doIt" name="doIt" value="Submit">
+    </form>
+    <script>
+        "use strict";
+        document.addEventListener("DOMContentLoaded", function () {
+            console.info("dom ready");
+            const btn = document.getElementById("doIt");
+
+            const myform = document.querySelector("#mainform");
+            const fields = myform.querySelectorAll("input");
+
+            function is_valid(text, type) {
+                let valid = true;
+                let re = /.+/;
+                switch (type) {
+                    case "date":
+                        re = /^(0[1-9]|[1-2][0-9]|3[0-1])\.(0[1-9]|1[0-2])\.((19|20)\d{2})$/; //регулярка для проверки даты
+                        break;
+                    case "name":
+                        re = /^([A-Z]){1}([a-z, ,-]+)|([А-Я,І]{1})([а-я,і]+)$/; //регулярка для проверки имени
+                        break;
+                    case "login":
+                        re = /^(?=[A-Za-z]){1}(\w+){5,}$/  //;  //регулярка для проверки логина не менее 5 символов
+                        break;
+                    case "email":
+                        re = /^([^!@"'`\/\\&|?^$\s]{2,})@([^!@"'`\/\\&|?^$\s\.]+\.)+([^!@"'`\/\\&|?^$\s\.0-9]+)$/; //регулярка для проверки e-mail
+                        break;
+                    case "passport":
+                        re = /^([A-ZА-Я]{2}[0-9]{6})|([0-9]{8}\-[0-9]{5})$/; //проверка паспорта или ID карты
+                        break;
+                    case "phone":
+                        re = /^\+([0-9]{10,15})$/; //регулярка для проверки телефона
+                        break;
+                    case "password":
+                        re = /^(?=.*[0-9])(?=.*[\W])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*])[0-9a-zA-Z!@#$%^&*]{8,}$/;    //регулярка для проверки пароля
+                        break;
+
+                }
+                valid = re.test(text);
+                return valid;
+
+                console.info();
+            }
+            btn.addEventListener("click", function (event) {
+                let haveError = false;
+                try {
+                    fields.forEach(function (Item) {
+                        let is_ok = true;
+                        if (Item.value == "") {
+                            is_ok = false;
+                        } else {
+                            if (Item.dataset.validation != undefined) {
+                                if (!is_valid(Item.value, Item.dataset.validation)) {
+                                    is_ok = false;
+                                }
+                            }
+                        }
+                        if (is_ok == true) {
+                            Item.classList.add("valid");
+                            Item.classList.remove("error");
+                        } else {
+                            Item.classList.remove("valid");
+                            Item.classList.add("error");
+                            haveError = true;
+                        }
+                    });
+                    if (haveError == true) throw new Error("fill all fields");
+                } catch (e) {
+                    alert(e.message);
+                    event.preventDefault();
+                }
+
+
+            });
+        });
+    </script>
+</body>
+
+</html>
